@@ -5,14 +5,88 @@ import { PROPS_AUTHEN, PROPS_PROFILE, PROPS_NICKNAME } from '../types';
 
 const apiUrl = process.env.REACT_APP_DEV_API_URL;
 
-export const incrementAsync = createAsyncThunk(
-    'counter/fetchCount',
-    async (amount: number) => {
-        const response = await fetchCount(amount);
-        // The value we return becomes the `fulfilled` action payload
-        return response.data;
+// JWT取得
+export const fetchAsyncLogin = createAsyncThunk(
+    "auth/post",
+    // 非同期を同期に変更
+    async (authen: PROPS_AUTHEN) => {
+        const res = await axios.post(`${apiUrl}authen/jwt/create`, authen, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        // JWTを返す
+        return res.data;
     }
 );
+
+// 新規アカウント作成
+export const fetchAsyncRegister = createAsyncThunk(
+    "auth/register",
+    async (auth: PROPS_AUTHEN) => {
+        const res = await axios.post(`${apiUrl}api/register/`, auth, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return res.data;
+    }
+);
+
+// プロフィール作成
+export const fetchAsyncCreateProf = createAsyncThunk(
+    "profile/post",
+    async (nickName: PROPS_NICKNAME) => {
+        const res = await axios.post(`${apiUrl}api/profile/`, nickName, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `JWT ${localStorage.localJWT}`,
+            },
+        });
+        return res.data;
+    }
+);
+
+// プロフィール更新
+export const fetchAsyncUpdateProf = createAsyncThunk(
+    "profile/put",
+    async (profile: PROPS_PROFILE) => {
+        const uploadData = new FormData();
+        uploadData.append("nickName", profile.nickName);
+        profile.img && uploadData.append("img", profile.img, profile.img.name);
+        const res = await axios.put(
+        `${apiUrl}api/profile/${profile.id}/`,
+        uploadData,
+        {
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `JWT ${localStorage.localJWT}`,
+            },
+        }
+        );
+        return res.data;
+    }
+);
+
+// プロフィール取得
+export const fetchAsyncGetMyProf = createAsyncThunk("profile/get", async () => {
+    const res = await axios.get(`${apiUrl}api/myprofile/`, {
+        headers: {
+            Authorization: `JWT ${localStorage.localJWT}`,
+        },
+    });
+    return res.data[0];
+});
+
+// プロフィール一覧
+export const fetchAsyncGetProfs = createAsyncThunk("profiles/get", async () => {
+    const res = await axios.get(`${apiUrl}api/profile/`, {
+        headers: {
+            Authorization: `JWT ${localStorage.localJWT}`,
+        },
+    });
+    return res.data;
+});
 
 export const authSlice = createSlice({
     name: 'auth',
