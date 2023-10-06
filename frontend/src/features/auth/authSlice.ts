@@ -151,6 +151,31 @@ export const authSlice = createSlice({
             state.myprofile.nickName = action.payload;
         },
     },
+    extraReducers: (builder) => {
+        // fetchAsyncLoginが正常終了した場合にJWTをローカルストレージに格納
+        builder.addCase(fetchAsyncLogin.fulfilled, (state, action) => {
+            localStorage.setItem("localJWT", action.payload.access);
+        });
+        // fetchAsyncCreateProfが正常終了した場合にプロフィールデータをmyprofileに格納
+        builder.addCase(fetchAsyncCreateProf.fulfilled, (state, action) => {
+            state.myprofile = action.payload;
+        });
+        // fetchAsyncGetMyProfが正常終了した場合にプロフィールデータをmyprofileに格納
+        builder.addCase(fetchAsyncGetMyProf.fulfilled, (state, action) => {
+            state.myprofile = action.payload;
+        });
+        // fetchAsyncGetProfsが正常終了した場合にプロフィール全データをprofilesに格納
+        builder.addCase(fetchAsyncGetProfs.fulfilled, (state, action) => {
+            state.profiles = action.payload;
+        });
+        // fetchAsyncUpdateProfが正常終了した場合に更新したプロフィールとIDが一致するものを置き換える
+        builder.addCase(fetchAsyncUpdateProf.fulfilled, (state, action) => {
+                state.myprofile = action.payload;
+                state.profiles = state.profiles.map((prof) =>
+                prof.id === action.payload.id ? action.payload : prof
+            );
+        });
+    },
 });
 
 export const {
