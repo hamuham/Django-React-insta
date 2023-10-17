@@ -49,7 +49,47 @@ const Auth: React.FC = () => {
     const dispatch: AppDispatch = useDispatch();
 
     return (
-        <div></div>
+        <>
+        <Modal
+            isOpen={openSignUp}
+            // モーダル以外の場所をクリックした時openSignUpをリセット
+            onRequestClose={async () => {
+                await dispatch(resetOpenSignUp());
+            }}
+            style={customStyles}
+        >
+            <Formik
+                // 初期状態のエラーを定義
+                initialErrors={{ email: "required" }}
+                initialValues={{ email: "", password: "" }}
+                onSubmit={async (values) => {
+                    // ステートを管理
+                    await dispatch(fetchCredStart());
+                    const resultReg = await dispatch(fetchAsyncRegister(values));
+
+                    // 新規ユーザーの作成が成功した時
+                    if (fetchAsyncRegister.fulfilled.match(resultReg)) {
+                        await dispatch(fetchAsyncLogin(values));
+                        await dispatch(fetchAsyncCreateProf({ nickName: "anonymous" }));
+
+                        await dispatch(fetchAsyncGetProfs());
+                        // await dispatch(fetchAsyncGetPosts());
+                        // await dispatch(fetchAsyncGetComments());
+                        await dispatch(fetchAsyncGetMyProf());
+                    }
+                    await dispatch(fetchCredEnd());
+                    await dispatch(resetOpenSignUp());
+                }}
+                validationSchema={Yup.object().shape({
+                    email: Yup.string()
+                        .email("email format is wrong")
+                        .required("email is must"),
+                    password: Yup.string().required("password is must").min(4),
+                })}
+            ></Formik>
+        </Modal>
+
+        </>
     );
 };
 
