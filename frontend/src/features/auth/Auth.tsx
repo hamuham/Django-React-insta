@@ -101,6 +101,7 @@ const Auth: React.FC = () => {
                                 <div className={styles.auth_signUp}>
                                     <h1 className={styles.auth_title}>SNS clone</h1>
                                     <br />
+                                    {/* 読み込み時のアニメーション */}
                                     <div className={styles.auth_progress}>
                                         {isLoadingAuth && <CircularProgress />}
                                     </div>
@@ -127,6 +128,7 @@ const Auth: React.FC = () => {
                                         onBlur={handleBlur}
                                         value={values.password}
                                     />
+                                    {/* 一度でもフォーカスがあたりバリデーションエラーが発生した場合エラーメッセージ */}
                                     {touched.password && errors.password ? (
                                         <div className={styles.auth_error}>{errors.password}</div>
                                     ) : null}
