@@ -140,4 +140,53 @@ export const postSlice = createSlice({
             state.openNewPost = false;
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchAsyncGetPosts.fulfilled, (state, action) => {
+            return {
+                ...state,
+                posts: action.payload,
+            };
+        });
+        builder.addCase(fetchAsyncNewPost.fulfilled, (state, action) => {
+            return {
+                ...state,
+                posts: [...state.posts, action.payload],
+            };
+        });
+        builder.addCase(fetchAsyncGetComments.fulfilled, (state, action) => {
+            return {
+                ...state,
+                comments: action.payload,
+            };
+        });
+        builder.addCase(fetchAsyncPostComment.fulfilled, (state, action) => {
+            return {
+                ...state,
+                comments: [...state.comments, action.payload],
+            };
+        });
+        builder.addCase(fetchAsyncPatchLiked.fulfilled, (state, action) => {
+            return {
+                ...state,
+                posts: state.posts.map((post) =>
+                    post.id === action.payload.id ? action.payload : post
+                ),
+            };
+        });
+    },
 });
+
+export const {
+    fetchPostStart,
+    fetchPostEnd,
+    setOpenNewPost,
+    resetOpenNewPost,
+} = postSlice.actions;
+
+export const selectIsLoadingPost = (state: RootState) =>
+    state.post.isLoadingPost;
+export const selectOpenNewPost = (state: RootState) => state.post.openNewPost;
+export const selectPosts = (state: RootState) => state.post.posts;
+export const selectComments = (state: RootState) => state.post.comments;
+
+export default postSlice.reducer;
