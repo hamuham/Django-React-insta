@@ -175,7 +175,7 @@ export const postSlice = createSlice({
         });
     },
 });
-
+// reducersをエクスポート
 export const {
     fetchPostStart,
     fetchPostEnd,
