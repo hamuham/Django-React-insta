@@ -98,7 +98,7 @@ const Core: React.FC = () => {
                         </button>
                         <div className={styles.core_logout}>
                             {(isLoadingPost || isLoadingAuth) && <CircularProgress />}
-                            <Buttonon
+                            <Button
                                 onClick={() => {
                                     localStorage.removeItem("localJWT");
                                     dispatch(editNickname(""));
@@ -108,7 +108,7 @@ const Core: React.FC = () => {
                                 }}
                             >
                                 Logout
-                            </Buttonon>
+                            </Button>
                             <button
                                 className={styles.core_btnModal}
                                     onClick={() => {
@@ -150,6 +150,30 @@ const Core: React.FC = () => {
                     </div>
                 )}
             </div>
+            {/* 投稿の一覧 */}
+            {profile?.nickName && (
+                <>
+                    <div className={styles.core_posts}>
+                        <Grid container spacing={4}>
+                            {posts
+                                .slice(0)
+                                .reverse()
+                                .map((post) => (
+                                    <Grid key={post.id} item xs={12} md={4}>
+                                        <Post
+                                            postId={post.id}
+                                            title={post.title}
+                                            loginId={profile.userProfile}
+                                            userPost={post.userPost}
+                                            imageUrl={post.img}
+                                            liked={post.liked}
+                                        />
+                                    </Grid>
+                            ))}
+                        </Grid>
+                    </div>
+                </>
+            )}
         </div>
     )
 }
