@@ -32,21 +32,54 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Post: React.FC<PROPS_POST> = ({
-    postId,
-    loginId,
-    userPost,
-    title,
-    imageUrl,
-    liked,
-  }) => {
-    const classes = useStyles();
-    const dispatch: AppDispatch = useDispatch();
-    const profiles = useSelector(selectProfiles);
-    const comments = useSelector(selectComments);
-    const [text, setText] = useState("");
-  return (
-    <div>Post</div>
-  )
+        postId,
+        loginId,
+        userPost,
+        title,
+        imageUrl,
+        liked,
+    }) => {
+        const classes = useStyles();
+        const dispatch: AppDispatch = useDispatch();
+        const profiles = useSelector(selectProfiles);
+        const comments = useSelector(selectComments);
+        const [text, setText] = useState("");
+
+        // idと合致したコメントを抽出
+        const commentsOnPost = comments.filter((com) => {
+            return com.post === postId;
+        });
+
+        // 投稿をしたプロフィールを抽出
+        const prof = profiles.filter((prof) => {
+            return prof.userProfile === userPost;
+        });
+
+        // コメント作成
+        const postComment = async (e: React.MouseEvent<HTMLElement>) => {
+            e.preventDefault();
+            const packet = { text: text, post: postId };
+            await dispatch(fetchPostStart());
+            await dispatch(fetchAsyncPostComment(packet));
+            await dispatch(fetchPostEnd());
+            setText("");
+        };
+
+        const handlerLiked = async () => {
+            const packet = {
+                id: postId,
+                title: title,
+                current: liked,
+                new: loginId,
+            };
+            await dispatch(fetchPostStart());
+            await dispatch(fetchAsyncPatchLiked(packet));
+            await dispatch(fetchPostEnd());
+        };
+
+    return (
+        <div>Post</div>
+    )
 }
 
 export default Post
