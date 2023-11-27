@@ -76,10 +76,39 @@ const Post: React.FC<PROPS_POST> = ({
             await dispatch(fetchAsyncPatchLiked(packet));
             await dispatch(fetchPostEnd());
         };
+        if (title) {
+            return (
+                <div className={styles.post}>
+                    {/* 投稿者 */}
+                    <div className={styles.post_header}>
+                        <Avatar className={styles.post_avatar} src={prof[0]?.img} />
+                        <h3>{prof[0]?.nickName}</h3>
+                    </div>
+                    <img className={styles.post_image} src={imageUrl} alt="" />
 
-    return (
-        <div>Post</div>
-    )
-}
-
-export default Post
+                    {/* いいねユーザー、投稿ユーザー、 */}
+                    <h4 className={styles.post_text}>
+                        <Checkbox
+                            className={styles.post_checkBox}
+                            icon={<FavoriteBorder />}
+                            checkedIcon={<Favorite />}
+                            checked={liked.some((like) => like === loginId)}
+                            onChange={handlerLiked}
+                        />
+                        <strong> {prof[0]?.nickName}</strong> {title}
+                        <AvatarGroup max={7}>
+                            {liked.map((like) => (
+                                <Avatar
+                                    className={styles.post_avatarGroup}
+                                    key={like}
+                                    src={profiles.find((prof) => prof.userProfile === like)?.img}
+                                />
+                            ))}
+                        </AvatarGroup>
+                    </h4>
+                </div>
+            );
+        }
+        return null;
+    };
+export default Post;
