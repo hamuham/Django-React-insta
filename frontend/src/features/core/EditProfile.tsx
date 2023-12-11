@@ -17,20 +17,20 @@ import {
   fetchAsyncUpdateProf,
 } from '../auth/authSlice';
 
-
 import { Button, TextField, IconButton } from '@material-ui/core';
+import { MdAddAPhoto } from 'react-icons/md';
 
 const customStyles = {
-  content: {
-    top: "55%",
-    left: "50%",
+    content: {
+        top: '55%',
+        left: '50%',
 
-    width: 280,
-    height: 220,
-    padding: "50px",
+        width: 280,
+        height: 220,
+        padding: '50px',
 
-    transform: "translate(-50%, -50%)",
-  },
+        transform: 'translate(-50%, -50%)',
+    },
 };
 
 const EditProfile: React.FC = () => {
@@ -58,8 +58,49 @@ const EditProfile: React.FC = () => {
     };
 
     return (
-        <div>EditProfile</div>
-    )
-}
+        <>
+            {/* ニックネーム編集 */}
+            <Modal
+                isOpen={openProfile}
+                onRequestClose={async () => {
+                    await dispatch(resetOpenProfile());
+                }}
+                style={customStyles}
+            >
+                <form className={styles.core_signUp}>
+                    <h1 className={styles.core_title}>SNS clone</h1>
+                    <br />
+                    <TextField
+                        placeholder="nickname"
+                        type="text"
+                        value={profile?.nickName}
+                        onChange={(e) => dispatch(editNickname(e.target.value))}
+                    />
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        hidden={true}
+                        onChange={(e) => setImage(e.target.files![0])}
+                    />
+                    <br />
+                    <IconButton onClick={handlerEditPicture}>
+                        <MdAddAPhoto />
+                    </IconButton>
+                    <br />
+                    <Button
+                        disabled={!profile?.nickName}
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        onClick={updateProfile}
+                    >
+                        Update
+                    </Button>
+                </form>
+            </Modal>
+        </>
+    );
+};
 
 export default EditProfile
