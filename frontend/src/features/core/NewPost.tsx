@@ -8,27 +8,27 @@ import styles from './Core.module.css';
 import { File } from '../types';
 
 import {
-  selectOpenNewPost,
-  resetOpenNewPost,
-  fetchPostStart,
-  fetchPostEnd,
-  fetchAsyncNewPost,
+    selectOpenNewPost,
+    resetOpenNewPost,
+    fetchPostStart,
+    fetchPostEnd,
+    fetchAsyncNewPost,
 } from '../post/postSlice';
 
 import { Button, TextField, IconButton } from '@material-ui/core';
 import { MdAddAPhoto } from 'react-icons/md';
 
 const customStyles = {
-  content: {
-    top: '55%',
-    left: '50%',
+    content: {
+        top: '55%',
+        left: '50%',
 
-    width: 280,
-    height: 220,
-    padding: '50px',
+        width: 280,
+        height: 220,
+        padding: '50px',
 
-    transform: 'translate(-50%, -50%)',
-  },
+        transform: 'translate(-50%, -50%)',
+    },
 };
 
 const NewPost: React.FC = () => {
@@ -43,8 +43,59 @@ const NewPost: React.FC = () => {
         fileInput?.click();
     };
 
+    // サブミットボタン押下時
+    const newPost = async (e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault();
+        const packet = { title: title, img: image };
+        await dispatch(fetchPostStart());
+        await dispatch(fetchAsyncNewPost(packet));
+        await dispatch(fetchPostEnd());
+        setTitle('');
+        setImage(null);
+        dispatch(resetOpenNewPost());
+    };
+
     return (
-        <div>NewPost</div>
+        <>
+            <Modal
+                isOpen={openNewPost}
+                onRequestClose={async () => {
+                    await dispatch(resetOpenNewPost());
+                }}
+                style={customStyles}
+            >
+                <form className={styles.core_signUp}>
+                    <h1 className={styles.core_title}>SNS clone</h1>
+
+                    <br />
+                    <TextField
+                        placeholder="Please enter caption"
+                        type="text"
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        hidden={true}
+                        onChange={(e) => setImage(e.target.files![0])}
+                    />
+                    <br />
+                    <IconButton onClick={handlerEditPicture}>
+                    <MdAddAPhoto />
+                    </IconButton>
+                    <br />
+                    <Button
+                        disabled={!title || !image}
+                        variant="contained"
+                        color="primary"
+                        onClick={newPost}
+                    >
+                        New post
+                    </Button>
+                </form>
+            </Modal>
+        </>
     )
 }
 
